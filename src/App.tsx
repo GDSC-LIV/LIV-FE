@@ -10,6 +10,7 @@ import './index.css';
 const App: React.FC = () => {
   const [value, setValue] = useState(0);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [sortOption, setSortOption] = useState('latest');
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -17,6 +18,10 @@ const App: React.FC = () => {
 
   const toggleProfileMenu = () => {
     setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const handleSortChange = (option: string) => {
+    setSortOption(option);
   };
 
   return (
@@ -101,83 +106,176 @@ const App: React.FC = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white p-4 shadow-sm rounded-lg mt-4">
-            <div className="flex items-center space-x-4">
-              <img
-                src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
-                alt="Profile"
-                className="w-12 h-12 rounded-full"
-              />
-              <div>
-                <h3 className="font-semibold">Theresa Steward</h3>
-                <p className="text-gray-600">iOS developer</p>
-              </div>
-            </div>
-            <p className="mt-4 text-gray-800">
-              What did the Dursleys care if Harry lost his place on the House
-              Quidditch team because he hadn’t practiced all summer? What was it
-              to the Dursleys if Harry went back to school without any of his
-              homework done? The Dursleys were what wizards called Muggles (not
-              a drop of magical blood in their veins).
-            </p>
-            <button className="text-blue-500">Read More</button>
-            <div className="flex justify-between items-center mt-4 border-t pt-2">
-              <div className="flex space-x-4">
-                <button className="flex items-center space-x-2 text-gray-600">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 9l-5 5-5-5"
-                    ></path>
-                  </svg>
-                  <span>42</span>
-                </button>
-                <button className="flex items-center space-x-2 text-gray-600">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14 9l-5 5-5-5"
-                    ></path>
-                  </svg>
-                  <span>9</span>
-                </button>
-              </div>
-              <button className="flex items-center space-x-2 text-gray-600">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M14 9l-5 5-5-5"
-                  ></path>
-                </svg>
-                <span>Share</span>
-              </button>
-            </div>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              className={`text-sm px-4 py-2 rounded ${
+                sortOption === 'latest' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+              onClick={() => handleSortChange('latest')}
+            >
+              최신 게시물
+            </button>
+            <button
+              className={`text-sm px-4 py-2 rounded ${
+                sortOption === 'recommended' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+              }`}
+              onClick={() => handleSortChange('recommended')}
+            >
+              추천순 게시물
+            </button>
           </div>
+          {sortOption === 'latest' ? (
+            <div className="bg-white p-4 shadow-sm rounded-lg mt-4">
+              <div className="flex items-center space-x-4">
+                <img
+                  src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div>
+                  <h3 className="font-semibold">Theresa Steward</h3>
+                  <p className="text-gray-600">iOS developer</p>
+                </div>
+              </div>
+              <p className="mt-4 text-gray-800">
+                What did the Dursleys care if Harry lost his place on the House
+                Quidditch team because he hadn’t practiced all summer? What was it
+                to the Dursleys if Harry went back to school without any of his
+                homework done? The Dursleys were what wizards called Muggles (not
+                a drop of magical blood in their veins).
+              </p>
+              <button className="text-blue-500">Read More</button>
+              <div className="flex justify-between items-center mt-4 border-t pt-2">
+                <div className="flex space-x-4">
+                  <button className="flex items-center space-x-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 9l-5 5-5-5"
+                      ></path>
+                    </svg>
+                    <span>42</span>
+                  </button>
+                  <button className="flex items-center space-x-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 9l-5 5-5-5"
+                      ></path>
+                    </svg>
+                    <span>9</span>
+                  </button>
+                </div>
+                <button className="flex items-center space-x-2 text-gray-600">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 9l-5 5-5-5"
+                    ></path>
+                  </svg>
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white p-4 shadow-sm rounded-lg mt-4">
+              {/* Recommended posts go here */}
+              <div className="flex items-center space-x-4">
+                <img
+                  src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full"
+                />
+                <div>
+                  <h3 className="font-semibold">John Doe</h3>
+                  <p className="text-gray-600">Backend developer</p>
+                </div>
+              </div>
+              <p className="mt-4 text-gray-800">
+                Recommended post content goes here...
+              </p>
+              <button className="text-blue-500">Read More</button>
+              <div className="flex justify-between items-center mt-4 border-t pt-2">
+                <div className="flex space-x-4">
+                  <button className="flex items-center space-x-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 9l-5 5-5-5"
+                      ></path>
+                    </svg>
+                    <span>42</span>
+                  </button>
+                  <button className="flex items-center space-x-2 text-gray-600">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M14 9l-5 5-5-5"
+                      ></path>
+                    </svg>
+                    <span>9</span>
+                  </button>
+                </div>
+                <button className="flex items-center space-x-2 text-gray-600">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 9l-5 5-5-5"
+                    ></path>
+                  </svg>
+                  <span>Share</span>
+                </button>
+              </div>
+            </div>
+          )}
         </section>
         <aside className="w-1/4 flex flex-col space-y-4">
           <div className="relative bg-white shadow-sm rounded-lg overflow-hidden">
@@ -193,10 +291,10 @@ const App: React.FC = () => {
                 className="w-24 h-24 rounded-full border-4 border-white -mt-12"
               />
               <h2 className="mt-4 font-semibold">Dmitry Kargaev</h2>
-              <p className="text-gray-600">Freelance UX/UI designer</p>
+              <p className="text-gray-600">Frontend developer</p>
               <p className="text-gray-600">
-                80+ projects in web design, mobile apps (iOS & android) and
-                creative projects. Open to offers.
+                Ruby II 
+                https://github.com/
               </p>
             </div>
           </div>
@@ -207,7 +305,7 @@ const App: React.FC = () => {
                 <h4 className="font-semibold">해시태그</h4>
               </div>
               <div className="mb-4">
-                <h4 className="font-semibold">트렌드기사</h4>
+                <h4 className="font-semibold">트렌드기사&광고</h4>
               </div>
             </div>
           </div>
