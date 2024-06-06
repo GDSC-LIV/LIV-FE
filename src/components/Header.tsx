@@ -1,0 +1,72 @@
+import React, { useState } from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import HomeIcon from '@mui/icons-material/Home';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import PersonIcon from '@mui/icons-material/Person';
+import ProfileMenu from '../components/home/ProfileMenu';
+
+interface HeaderProps {
+  value: number;
+  onChange: (event: React.SyntheticEvent, newValue: number) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ value, onChange }) => {
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  return (
+    <header className="w-full bg-white shadow-sm z-50 relative">
+      <div className="max-w-6xl mx-auto flex items-center justify-between relative">
+        <div className="flex items-center space-x-4">
+          <img
+            src="https://store-images.s-microsoft.com/image/apps.31120.9007199266245564.44dc7699-748d-4c34-ba5e-d04eb48f7960.bc4172bd-63f0-455a-9acd-5457f44e4473?h=464"
+            alt="LinkedIn Logo"
+            className="w-10 h-10"
+          />
+          <input
+            type="text"
+            placeholder="Search"
+            className="border border-gray-300 rounded-full px-4 py-2"
+          />
+        </div>
+        <div className="flex items-center space-x-6">
+          <Tabs
+            value={value}
+            onChange={onChange}
+            aria-label="icon label tabs example"
+            sx={{
+              ".MuiTab-root": {
+                minWidth: "70px",
+                padding: "12px 12px",
+                paddingBottom: "12px",
+                fontSize: "0.7rem",
+                "& .MuiTab-iconWrapper": {
+                  fontSize: "1.4rem",
+                },
+              },
+            }}
+          >
+            <Tab icon={<HomeIcon />} label="Home" />
+            <Tab icon={<AccountTreeIcon />} label="Projects" />
+            <Tab icon={<PersonIcon />} label="Mypage" />
+          </Tabs>
+          <div className="relative">
+            <img
+              src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+              alt="Profile"
+              className="w-12 h-12 rounded-full cursor-pointer"
+              onClick={toggleProfileMenu}
+            />
+            {isProfileMenuOpen && <ProfileMenu />}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
