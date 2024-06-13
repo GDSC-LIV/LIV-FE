@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import HomeIcon from '@mui/icons-material/Home';
@@ -12,10 +13,24 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ value, onChange }) => {
+  const navigate = useNavigate();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   const toggleProfileMenu = () => {
     setIsProfileMenuOpen(!isProfileMenuOpen);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    onChange(event, newValue);
+
+    // 페이지 이동 처리
+    if (newValue === 0) {
+      navigate('/');
+    } else if (newValue === 1) {
+      navigate('/project');
+    } else if (newValue === 2) {
+      navigate('/mypage'); // 마이페이지 라우트를 추가하려는 경우
+    }
   };
 
   return (
@@ -36,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ value, onChange }) => {
         <div className="flex items-center space-x-6">
           <Tabs
             value={value}
-            onChange={onChange}
+            onChange={handleTabChange}
             aria-label="icon label tabs example"
             sx={{
               ".MuiTab-root": {

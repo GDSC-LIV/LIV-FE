@@ -670,6 +670,7 @@
 // };
 
 // export default App;
+// 위는 컴포넌트 분리 전 
 
 
 import React, { useState } from 'react';
