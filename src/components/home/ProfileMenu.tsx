@@ -7,7 +7,7 @@ const ProfileMenu: React.FC = () => {
         로그인
       </button>
       <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-        프로필 사진 수정
+        프로필 수정
       </button>
       <button className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
         로그아웃
