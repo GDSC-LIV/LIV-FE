@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Typography, Button, TextField, Avatar } from '@mui/material';
+import { Tabs, Tab, Box, Typography, Button, TextField, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Chip, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import Header from '../components/Header';
 
 const Mypage: React.FC = () => {
@@ -75,56 +75,181 @@ const PersonalInfo: React.FC = () => {
 };
 
 const MyProjects: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<{ id: number, name: string } | null>(null);
+  const [distributionAddress, setDistributionAddress] = useState('');
+
   const projects = [
-    { id: 1, name: '프로젝트 A', type: '프로젝트', description: 'AI 기반 데이터 분석' },
-    { id: 2, name: '스터디 B', type: '스터디', description: '리액트 스터디' },
-    { id: 3, name: '프로젝트 C', type: '프로젝트', description: '웹 개발 프로젝트' },
+    { id: 1, name: '프로젝트 A', type: '프로젝트', description: 'AI 기반 데이터 분석', imgSrc: 'https://via.placeholder.com/150', techStack: ['Python', 'TensorFlow', 'Pandas'] },
+    { id: 2, name: '스터디 B', type: '스터디', description: '리액트 스터디', imgSrc: 'https://via.placeholder.com/150', techStack: ['React', 'JavaScript', 'HTML'] },
+    { id: 3, name: '프로젝트 C', type: '프로젝트', description: '웹 개발 프로젝트', imgSrc: 'https://via.placeholder.com/150', techStack: ['Node.js', 'Express', 'MongoDB'] },
+    { id: 4, name: '프로젝트 D', type: '프로젝트', description: '모바일 앱 개발', imgSrc: 'https://via.placeholder.com/150', techStack: ['Flutter', 'Dart', 'Firebase'] },
+    { id: 5, name: '프로젝트 E', type: '프로젝트', description: '데이터 시각화', imgSrc: 'https://via.placeholder.com/150', techStack: ['D3.js', 'JavaScript', 'CSS'] },
   ];
+
+  const handleClickOpen = (project: { id: number, name: string }) => {
+    setSelectedProject(project);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedProject(null);
+    setDistributionAddress('');
+  };
+
+  const handlePromote = () => {
+    // Handle promotion logic here
+    console.log(`Promoting ${selectedProject?.name} with address: ${distributionAddress}`);
+    handleClose();
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      {projects.map((project) => (
-        <Box key={project.id} sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2 }}>
-          <Typography variant="h6">{project.name}</Typography>
-          <Typography variant="body2">{project.type}</Typography>
-          <Typography variant="body1">{project.description}</Typography>
-          {project.type === '프로젝트' && (
-            <Button variant="contained" sx={{ mt: 1 }}>
-              홍보하기
-            </Button>
-          )}
-        </Box>
-      ))}
+      <Grid container spacing={2}>
+        {projects.map((project) => (
+          <Grid item xs={12} sm={6} md={3} key={project.id}>
+            <Box sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+              <Avatar
+                alt={project.name}
+                src={project.imgSrc}
+                sx={{ width: '100%', height: 150, mb: 2, borderRadius: 2 }}
+              />
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="h6">{project.name}</Typography>
+                  {project.type === '프로젝트' && (
+                    <Button variant="contained" onClick={() => handleClickOpen(project)}>
+                      홍보하기
+                    </Button>
+                  )}
+                </Box>
+                <Typography variant="body2">{project.type}</Typography>
+                <Typography variant="body1">{project.description}</Typography>
+                <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {project.techStack.map((tech, index) => (
+                    <Chip key={index} label={tech} size="small" />
+                  ))}
+                </Box>
+              </Box>
+            </Box>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>홍보하기</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="배포주소"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={distributionAddress}
+            onChange={(e) => setDistributionAddress(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            취소
+          </Button>
+          <Button onClick={handlePromote} color="primary">
+            홍보하기
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
 const MyActivity: React.FC = () => {
+  const [view, setView] = useState('posts');
+
   const posts = [
-    { id: 1, title: '첫 번째 게시물', date: '2023-06-12' },
-    { id: 2, title: '두 번째 게시물', date: '2023-06-13' },
+    { id: 1, title: '첫 번째 게시물', description: '게시물 내용 1', date: '2023-06-12', imgSrc: 'https://via.placeholder.com/150', techStack: ['React', 'JavaScript'] },
+    { id: 2, title: '두 번째 게시물', description: '게시물 내용 2', date: '2023-06-13', imgSrc: 'https://via.placeholder.com/150', techStack: ['Node.js', 'Express'] },
   ];
 
   const savedFeeds = [
-    { id: 1, title: '유용한 글 모음', date: '2023-06-10' },
+    { id: 1, title: '유용한 글 모음', description: '글 모음 내용', date: '2023-06-10', imgSrc: 'https://via.placeholder.com/150', techStack: ['Python', 'Django'] },
   ];
+
+  const handleViewChange = (event: React.MouseEvent<HTMLElement>, newView: string) => {
+    if (newView !== null) {
+      setView(newView);
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h6">내가 작성한 게시물</Typography>
-      {posts.map((post) => (
-        <Box key={post.id} sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2 }}>
-          <Typography variant="body1">{post.title}</Typography>
-          <Typography variant="body2">{post.date}</Typography>
-        </Box>
-      ))}
-      <Typography variant="h6" sx={{ mt: 4 }}>저장한 피드</Typography>
-      {savedFeeds.map((feed) => (
-        <Box key={feed.id} sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2 }}>
-          <Typography variant="body1">{feed.title}</Typography>
-          <Typography variant="body2">{feed.date}</Typography>
-        </Box>
-      ))}
+      <ToggleButtonGroup
+        value={view}
+        exclusive
+        onChange={handleViewChange}
+        aria-label="view selection"
+        sx={{ alignSelf: 'center', mb: 2 }}
+      >
+        <ToggleButton value="posts" aria-label="posts">
+          내가 작성한 게시물
+        </ToggleButton>
+        <ToggleButton value="savedFeeds" aria-label="saved feeds">
+          스크랩한 게시물
+        </ToggleButton>
+      </ToggleButtonGroup>
+      
+      {view === 'posts' && (
+        <Grid container spacing={2}>
+          {posts.map((post) => (
+            <Grid item xs={12} sm={6} md={3} key={post.id}>
+              <Box sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+                <Avatar
+                  alt={post.title}
+                  src={post.imgSrc}
+                  sx={{ width: '100%', height: 150, mb: 2, borderRadius: 2 }}
+                />
+                <Box>
+                  <Typography variant="h6">{post.title}</Typography>
+                  <Typography variant="body2">{post.date}</Typography>
+                  <Typography variant="body1">{post.description}</Typography>
+                  <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {post.techStack.map((tech, index) => (
+                      <Chip key={index} label={tech} size="small" />
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
+      {view === 'savedFeeds' && (
+        <Grid container spacing={2}>
+          {savedFeeds.map((feed) => (
+            <Grid item xs={12} sm={6} md={3} key={feed.id}>
+              <Box sx={{ border: '1px solid #ccc', p: 2, borderRadius: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+                <Avatar
+                  alt={feed.title}
+                  src={feed.imgSrc}
+                  sx={{ width: '100%', height: 150, mb: 2, borderRadius: 2 }}
+                />
+                <Box>
+                  <Typography variant="h6">{feed.title}</Typography>
+                  <Typography variant="body2">{feed.date}</Typography>
+                  <Typography variant="body1">{feed.description}</Typography>
+                  <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {feed.techStack.map((tech, index) => (
+                      <Chip key={index} label={tech} size="small" />
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 };
