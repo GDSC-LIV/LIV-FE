@@ -38,9 +38,10 @@ const Header: React.FC<HeaderProps> = ({ value, onChange }) => {
       <div className="max-w-6xl mx-auto flex items-center justify-between relative">
         <div className="flex items-center space-x-4">
           <img
-            src="https://store-images.s-microsoft.com/image/apps.31120.9007199266245564.44dc7699-748d-4c34-ba5e-d04eb48f7960.bc4172bd-63f0-455a-9acd-5457f44e4473?h=464"
-            alt="LinkedIn Logo"
-            className="w-10 h-10"
+            src="https://via.placeholder.com/150?text=LIV"
+            alt="LIV Logo"
+            className="w-10 h-10 cursor-pointer"
+            onClick={() => navigate('/')}
           />
           <input
             type="text"
