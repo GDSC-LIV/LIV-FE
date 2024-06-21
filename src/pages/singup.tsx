@@ -1,9 +1,40 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Stepper, Step, StepLabel, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, Button, TextField, Typography, Stepper, Step, StepLabel, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, ImageList, ImageListItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import skillicons from './skillicons'; // 기술 스택 아이콘 데이터를 포함하는 파일
 
 const steps = ['Basic Information', 'Development Interests', 'Development Stack'];
+
+const developmentStacks = [
+  { title: 'JavaScript', img: 'https://skillicons.dev/icons?i=js&theme=light' },
+  { title: 'TypeScript', img: 'https://skillicons.dev/icons?i=ts' },
+  { title: 'React', img: 'https://skillicons.dev/icons?i=react&theme=light' },
+  { title: 'Vue', img: 'https://skillicons.dev/icons?i=vue&theme=light' },
+  { title: 'Node.js', img: 'https://skillicons.dev/icons?i=nodejs&theme=light' },
+  { title: 'Spring', img: 'https://skillicons.dev/icons?i=spring&theme=light' },
+  { title: 'Java', img: 'https://skillicons.dev/icons?i=java&theme=light' },
+  { title: 'Next.js', img: 'https://skillicons.dev/icons?i=nextjs&theme=light' },
+  { title: 'NestJS', img: 'https://skillicons.dev/icons?i=nestjs&theme=light' },
+  { title: 'Express', img: 'https://skillicons.dev/icons?i=express&theme=light' },
+  { title: 'Go', img: 'https://skillicons.dev/icons?i=go&theme=light' },
+  { title: 'C', img: 'https://skillicons.dev/icons?i=c&theme=light' },
+  { title: 'Python', img: 'https://skillicons.dev/icons?i=python&theme=light' },
+  { title: 'Django', img: 'https://skillicons.dev/icons?i=django&theme=light' },
+  { title: 'Swift', img: 'https://skillicons.dev/icons?i=swift&theme=light' },
+  { title: 'Kotlin', img: 'https://skillicons.dev/icons?i=kotlin&theme=light' },
+  { title: 'MySQL', img: 'https://skillicons.dev/icons?i=mysql&theme=light' },
+  { title: 'MongoDB', img: 'https://skillicons.dev/icons?i=mongodb&theme=light' },
+  { title: 'PHP', img: 'https://skillicons.dev/icons?i=php&theme=light' },
+  { title: 'GraphQL', img: 'https://skillicons.dev/icons?i=graphql&theme=light' },
+  { title: 'Firebase', img: 'https://skillicons.dev/icons?i=firebase&theme=light' },
+  { title: 'React Native', img: 'https://skillicons.dev/icons?i=react&theme=light' },
+  { title: 'Unity', img: 'https://skillicons.dev/icons?i=unity&theme=light' },
+  { title: 'Flutter', img: 'https://skillicons.dev/icons?i=flutter&theme=light' },
+  { title: 'AWS', img: 'https://skillicons.dev/icons?i=aws&theme=light' },
+  { title: 'Kubernetes', img: 'https://skillicons.dev/icons?i=kubernetes' },
+  { title: 'Docker', img: 'https://skillicons.dev/icons?i=docker' },
+  { title: 'Git', img: 'https://skillicons.dev/icons?i=git&theme=light' },
+  { title: 'Figma', img: 'https://skillicons.dev/icons?i=figma&theme=light' }
+];
 
 const Register: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -12,16 +43,9 @@ const Register: React.FC = () => {
     password: '',
     confirmPassword: '',
     nickname: '',
-    birthdate: '',
     interests: '',
-    stacks: {
-      js: false,
-      html: false,
-      css: false,
-      wasm: false,
-      // 추가적인 기술 스택...
-    },
   });
+  const [selectedStacks, setSelectedStacks] = useState<number[]>([]);
 
   const navigate = useNavigate();
 
@@ -30,11 +54,16 @@ const Register: React.FC = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleIconClick = (stack: string) => {
-    setFormValues({ ...formValues, stacks: { ...formValues.stacks, [stack]: !formValues.stacks[stack] } });
-  };
-
   const handleNext = () => {
+    if (activeStep === 2 && selectedStacks.length === 0) {
+      alert('Please select at least one development stack.');
+      return;
+    }
+    if (activeStep === steps.length - 1) {
+      console.log('Selected stacks:', selectedStacks.map(index => developmentStacks[index].title));
+      navigate('/login');
+      return;
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
@@ -42,9 +71,29 @@ const Register: React.FC = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleRegisterClick = () => {
-    navigate('/login');
+  const handleStackSelect = (index: number) => {
+    const currentIndex = selectedStacks.indexOf(index);
+    const newSelectedStacks = [...selectedStacks];
+
+    if (currentIndex === -1) {
+      newSelectedStacks.push(index);
+    } else {
+      newSelectedStacks.splice(currentIndex, 1);
+    }
+
+    setSelectedStacks(newSelectedStacks);
   };
+
+  const renderStackSelection = () => (
+    <ImageList sx={{ width: '100%', height: 400 }} cols={8} rowHeight={80}>
+      {developmentStacks.map((stack, index) => (
+        <ImageListItem key={stack.title} onClick={() => handleStackSelect(index)} style={{ cursor: 'pointer', border: selectedStacks.includes(index) ? '2px solid blue' : 'none', padding: '10px' }}>
+          <img src={stack.img} alt={stack.title} loading="lazy" style={{ width: '100%', height: '100%' }} />
+          <Typography sx={{ textAlign: 'center', mt: 1 }}>{stack.title}</Typography>
+        </ImageListItem>
+      ))}
+    </ImageList>
+  );
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f4f6f8' }}>
@@ -56,75 +105,38 @@ const Register: React.FC = () => {
             </Step>
           ))}
         </Stepper>
-        {activeStep === steps.length ? (
-          <>
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              Registration Complete
-            </Typography>
-            <Button variant="contained" color="primary" onClick={handleRegisterClick}>
-              Go to Login
-            </Button>
-          </>
-        ) : (
-          <>
-            {activeStep === 0 && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <TextField label="Email" name="email" value={formValues.email} onChange={handleInputChange} variant="outlined" fullWidth />
-                <TextField label="Password" name="password" type="password" value={formValues.password} onChange={handleInputChange} variant="outlined" fullWidth />
-                <TextField label="Confirm Password" name="confirmPassword" type="password" value={formValues.confirmPassword} onChange={handleInputChange} variant="outlined" fullWidth />
-                <TextField label="Nickname" name="nickname" value={formValues.nickname} onChange={handleInputChange} variant="outlined" fullWidth />
-                <TextField label="Birthdate" name="birthdate" value={formValues.birthdate} onChange={handleInputChange} variant="outlined" fullWidth />
-              </Box>
-            )}
-            {activeStep === 1 && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <FormControl component="fieldset">
-                  <FormLabel component="legend">Development Interests</FormLabel>
-                  <RadioGroup name="interests" value={formValues.interests} onChange={handleInputChange}>
-                    <FormControlLabel value="frontend" control={<Radio />} label="Frontend" />
-                    <FormControlLabel value="backend" control={<Radio />} label="Backend" />
-                    <FormControlLabel value="ai" control={<Radio />} label="AI" />
-                    <FormControlLabel value="server" control={<Radio />} label="Server" />
-                    <FormControlLabel value="cloud" control={<Radio />} label="Cloud" />
-                    <FormControlLabel value="devops" control={<Radio />} label="DevOps" />
-                  </RadioGroup>
-                </FormControl>
-              </Box>
-            )}
-            {activeStep === 2 && (
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <FormControl component="fieldset">
-                  <FormLabel component="legend">Development Stack</FormLabel>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {Object.keys(formValues.stacks).map((stack) => (
-                      <Box
-                        key={stack}
-                        sx={{
-                          border: formValues.stacks[stack] ? '2px solid blue' : '2px solid transparent',
-                          borderRadius: '80%',
-                          cursor: 'pointer',
-                        }}
-                        onClick={() => handleIconClick(stack)}
-                      >
-                        <img src={`https://skillicons.dev/icons?i=${stack}`} alt={stack} style={{ width: 40, height: 40 }} />
-                      </Box>
-                    ))}
-                  </Box>
-                </FormControl>
-              </Box>
-            )}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
-              {activeStep !== 0 && (
-                <Button variant="contained" onClick={handleBack}>
-                  Back
-                </Button>
-              )}
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-              </Button>
-            </Box>
-          </>
+        {activeStep === 0 && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField label="Email" name="email" value={formValues.email} onChange={handleInputChange} variant="outlined" fullWidth />
+            <TextField label="Password" name="password" type="password" value={formValues.password} onChange={handleInputChange} variant="outlined" fullWidth />
+            <TextField label="Confirm Password" name="confirmPassword" type="password" value={formValues.confirmPassword} onChange={handleInputChange} variant="outlined" fullWidth />
+            <TextField label="Nickname" name="nickname" value={formValues.nickname} onChange={handleInputChange} variant="outlined" fullWidth />
+          </Box>
         )}
+        {activeStep === 1 && (
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Development Interests</FormLabel>
+            <RadioGroup name="interests" value={formValues.interests} onChange={handleInputChange}>
+              <FormControlLabel value="frontend" control={<Radio />} label="Frontend" />
+              <FormControlLabel value="backend" control={<Radio />} label="Backend" />
+              <FormControlLabel value="ai" control={<Radio />} label="AI" />
+              <FormControlLabel value="server" control={<Radio />} label="Server" />
+              <FormControlLabel value="cloud" control={<Radio />} label="Cloud" />
+              <FormControlLabel value="devops" control={<Radio />} label="DevOps" />
+            </RadioGroup>
+          </FormControl>
+        )}
+        {activeStep === 2 && renderStackSelection()}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 4 }}>
+          {activeStep !== 0 && (
+            <Button variant="contained" onClick={handleBack}>
+              Back
+            </Button>
+          )}
+          <Button variant="contained" color="primary" onClick={handleNext}>
+            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+          </Button>
+        </Box>
       </Box>
     </Box>
   );

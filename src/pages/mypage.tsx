@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, Typography, Button, TextField, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Chip, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import Header from '../components/Header';
+import { IconButton } from '@mui/material';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import Autocomplete from '@mui/material/Autocomplete';
+import Stack from '@mui/material/Stack';
 
 const Mypage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -57,23 +61,106 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other })
   );
 };
 
+const techOptions = [
+  'JavaScript', 'TypeScript', 'React', 'Vue', 'Node.js', 'Spring', 'Java',
+  'Next.js', 'NestJS', 'Express', 'Go', 'C', 'Python', 'Django', 'Swift', 'Kotlin',
+  'MySQL', 'MongoDB', 'PHP', 'GraphQL', 'Firebase', 'React Native', 'Unity', 'Flutter',
+  'AWS', 'Kubernetes', 'Docker', 'Git', 'Figma'
+];
+
 const PersonalInfo: React.FC = () => {
+  const [name, setName] = useState('홍길동');
+  const [interests, setInterests] = useState('프로그래밍, 인공지능');
+  const [profilePic, setProfilePic] = useState('https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg');
+  const [techStack, setTechStack] = useState<string[]>([]);
+  const [newTech, setNewTech] = useState('');
+
+  const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setProfilePic(reader.result as string);
+        }
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+  };
+
+  const handleAddTech = (event: React.ChangeEvent<{}>, value: string[]) => {
+    setTechStack(value);
+  };
+
+  const handleSaveChanges = () => {
+    // Handle save changes logic
+    console.log('Saved changes:', { name, interests, techStack });
+  };
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
-      <Avatar
-        alt="Profile Picture"
-        src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
-        sx={{ width: 100, height: 100 }}
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, alignItems: 'center' }}>
+      <Box sx={{ position: 'relative' }}>
+        <Avatar alt="Profile Picture" src={profilePic} sx={{ width: 100, height: 100 }} />
+        <input
+          accept="image/*"
+          id="upload-photo"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleProfilePicChange}
+        />
+        <label htmlFor="upload-photo">
+          <IconButton component="span" sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+            <PhotoCamera />
+          </IconButton>
+        </label>
+      </Box>
+      <TextField
+        label="이름"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        variant="outlined"
+        fullWidth
+        sx={{ maxWidth: 500 }}
       />
-      <TextField label="이름" defaultValue="홍길동" variant="outlined" fullWidth sx={{ maxWidth: 500 }} />
-      <TextField label="관심분야" defaultValue="프로그래밍, 인공지능" variant="outlined" fullWidth sx={{ maxWidth: 500 }} />
-      <Button variant="contained" color="error">
-        회원 탈퇴
+      <TextField
+        label="관심분야"
+        value={interests}
+        onChange={(e) => setInterests(e.target.value)}
+        variant="outlined"
+        fullWidth
+        sx={{ maxWidth: 500 }}
+      />
+      <Stack spacing={3} sx={{ width: 500 }}>
+        <Autocomplete
+          multiple
+          id="tech-stack"
+          options={techOptions}
+          getOptionLabel={(option) => option}
+          value={techStack}
+          onChange={handleAddTech}
+          renderTags={(value: readonly string[], getTagProps) =>
+            value.map((option: string, index: number) => (
+              <Chip variant="outlined" label={option} {...getTagProps({ index })} key={option} />
+            ))
+          }
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              label="기술 스택"
+              placeholder="기술을 입력하세요"
+            />
+          )}
+        />
+      </Stack>
+      <Button variant="contained" color="primary" onClick={handleSaveChanges}>
+        저장하기
       </Button>
+      {/* <button className=" text-gray-500 underline py-2 px-4 text-lg">
+        회원 탈퇴
+    </button> */}
     </Box>
   );
 };
-
 const MyProjects: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<{ id: number, name: string } | null>(null);
