@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box, Typography, Button, TextField, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Chip, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { Tabs, Tab, Box, Typography, Button, TextField, Avatar, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Chip, ToggleButtonGroup, ToggleButton, IconButton } from '@mui/material';
 import Header from '../components/Header';
-import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Autocomplete from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Mypage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
@@ -161,6 +161,7 @@ const PersonalInfo: React.FC = () => {
     </Box>
   );
 };
+
 const MyProjects: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<{ id: number, name: string } | null>(null);
@@ -253,6 +254,13 @@ const MyProjects: React.FC = () => {
 
 const MyActivity: React.FC = () => {
   const [view, setView] = useState('posts');
+  const [open, setOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<{ id: number, title: string } | null>(null);
+  const [newMember, setNewMember] = useState('');
+  const [members, setMembers] = useState<{ [key: number]: string[] }>({
+    1: ['John Doe', 'Jane Smith'],
+    2: ['Alice Johnson'],
+  });
 
   const posts = [
     { id: 1, title: '첫 번째 게시물', description: '게시물 내용 1', date: '2023-06-12', imgSrc: 'https://via.placeholder.com/150', techStack: ['React', 'JavaScript'] },
@@ -266,6 +274,36 @@ const MyActivity: React.FC = () => {
   const handleViewChange = (event: React.MouseEvent<HTMLElement>, newView: string) => {
     if (newView !== null) {
       setView(newView);
+    }
+  };
+
+  const handleOpen = (post: { id: number, title: string }) => {
+    setSelectedPost(post);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedPost(null);
+    setNewMember('');
+  };
+
+  const handleAddMember = () => {
+    if (selectedPost) {
+      setMembers((prev) => ({
+        ...prev,
+        [selectedPost.id]: [...(prev[selectedPost.id] || []), newMember],
+      }));
+      setNewMember('');
+    }
+  };
+
+  const handleRemoveMember = (memberToRemove: string) => {
+    if (selectedPost) {
+      setMembers((prev) => ({
+        ...prev,
+        [selectedPost.id]: prev[selectedPost.id].filter((member) => member !== memberToRemove),
+      }));
     }
   };
 
@@ -285,7 +323,7 @@ const MyActivity: React.FC = () => {
           스크랩한 게시물
         </ToggleButton>
       </ToggleButtonGroup>
-      
+
       {view === 'posts' && (
         <Grid container spacing={2}>
           {posts.map((post) => (
@@ -304,6 +342,23 @@ const MyActivity: React.FC = () => {
                     {post.techStack.map((tech, index) => (
                       <Chip key={index} label={tech} size="small" />
                     ))}
+                  </Box>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body2">팀원 목록:</Typography>
+                    <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {members[post.id]?.map((member, index) => (
+                        <Chip
+                          key={index}
+                          label={member}
+                          size="small"
+                          onDelete={() => handleRemoveMember(member)}
+                          deleteIcon={<DeleteIcon />}
+                        />
+                      ))}
+                    </Box>
+                    <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={() => handleOpen(post)}>
+                      팀원 추가/삭제
+                    </Button>
                   </Box>
                 </Box>
               </Box>
@@ -337,6 +392,40 @@ const MyActivity: React.FC = () => {
           ))}
         </Grid>
       )}
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>팀원 관리</DialogTitle>
+        <DialogContent>
+  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <TextField
+      label="팀원 이름"
+      value={newMember}
+      onChange={(e) => setNewMember(e.target.value)}
+      variant="outlined"
+      fullWidth
+    />
+    <Button variant="contained" color="primary" onClick={handleAddMember}>
+      추가
+    </Button>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      {selectedPost && members[selectedPost.id]?.map((member, index) => (
+        <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography>{member}</Typography>
+          <IconButton onClick={() => handleRemoveMember(member)} color="secondary">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ))}
+    </Box>
+  </Box>
+</DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            닫기
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
