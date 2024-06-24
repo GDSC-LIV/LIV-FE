@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { FaGithub, FaTrashAlt } from 'react-icons/fa';
+import { FaGithub, FaTrashAlt, FaPlus } from 'react-icons/fa';
 import Header from '../components/Header';
 import './ProjectPage.css';
 import Tabs from '@mui/material/Tabs';
@@ -14,6 +14,10 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const localizer = momentLocalizer(moment);
 
@@ -74,6 +78,10 @@ const ProjectPage: React.FC = () => {
 
   const [teamNames, setTeamNames] = useState({ 1: 'Team 1', 2: 'Team 2' });
   const [newEvent, setNewEvent] = useState<Event>({ title: '', start: new Date(), end: new Date(), teamId: 0 });
+  const [memos, setMemos] = useState<{ [key: number]: string }>({ 1: '', 2: '' });
+  const [isTeamLeader, setIsTeamLeader] = useState(true); // 팀장 여부 설정
+  const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false);
+  const [newMember, setNewMember] = useState<TeamMember>({ id: 0, name: '', role: '', stack: '', github: '', photo: '' });
 
   const handleAddEvent = (teamId: number) => {
     setEvents([...events, { ...newEvent, teamId }]);
@@ -92,6 +100,10 @@ const ProjectPage: React.FC = () => {
     setTeamNames({ ...teamNames, [teamId]: name });
   };
 
+  const handleMemoChange = (teamId: number, memo: string) => {
+    setMemos({ ...memos, [teamId]: memo });
+  };
+
   const renderTeamMembers = (teamId: number) => {
     return teamMembers.map((member) => (
       <Paper key={member.id} elevation={3} sx={{ p: 2, mb: 2 }}>
@@ -107,11 +119,13 @@ const ProjectPage: React.FC = () => {
               <FaGithub />
             </a>
           </Grid>
-          <Grid item>
-            <button onClick={() => handleRemoveMember(member.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-              <FaTrashAlt />
-            </button>
-          </Grid>
+          {isTeamLeader && (
+            <Grid item>
+              <button onClick={() => handleRemoveMember(member.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
+                <FaTrashAlt />
+              </button>
+            </Grid>
+          )}
         </Grid>
       </Paper>
     ));
@@ -151,6 +165,34 @@ const ProjectPage: React.FC = () => {
     </div>
   );
 
+  const renderMemo = (teamId: number) => (
+    <div className="memo-section">
+      <h3>Team Memo</h3>
+      <TextField
+        fullWidth
+        label="Memo"
+        multiline
+        rows={4}
+        value={memos[teamId]}
+        onChange={(e) => handleMemoChange(teamId, e.target.value)}
+        margin="normal"
+      />
+    </div>
+  );
+
+  const handleOpenAddMemberDialog = () => {
+    setOpenAddMemberDialog(true);
+  };
+
+  const handleCloseAddMemberDialog = () => {
+    setOpenAddMemberDialog(false);
+  };
+
+  const handleAddNewMember = () => {
+    setTeamMembers([...teamMembers, { ...newMember, id: teamMembers.length + 1 }]);
+    handleCloseAddMemberDialog();
+  };
+
   return (
     <div>
       <Header value={1} onChange={() => {}} />
@@ -181,7 +223,7 @@ const ProjectPage: React.FC = () => {
             </div>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <TextField
+          <TextField
               fullWidth
               label="Team Name"
               value={teamNames[1]}
@@ -200,7 +242,13 @@ const ProjectPage: React.FC = () => {
               <div className="team-section">
                 <h2>{teamNames[1]} Members</h2>
                 {renderTeamMembers(1)}
+                {isTeamLeader && (
+                  <Button variant="outlined" startIcon={<FaPlus />} onClick={handleOpenAddMemberDialog}>
+                    Add Member
+                  </Button>
+                )}
               </div>
+              {renderMemo(1)}
             </div>
           </TabPanel>
           <TabPanel value={value} index={2}>
@@ -212,22 +260,73 @@ const ProjectPage: React.FC = () => {
               margin="normal"
             />
             <div className="calendar-section">
-              <Calendar
-                localizer={localizer}
-                events={events.filter(event => event.teamId === 2)}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }}
-              />
+            <Calendar
+  localizer={localizer}
+  events={events.filter(event => event.teamId === 2)}
+  startAccessor="start"
+  endAccessor="end"
+  style={{ height: 500 }}
+/>
+
               {renderAddEventForm(2)}
               <div className="team-section">
                 <h2>{teamNames[2]} Members</h2>
                 {renderTeamMembers(2)}
+                {isTeamLeader && (
+                  <Button variant="outlined" startIcon={<FaPlus />} onClick={handleOpenAddMemberDialog}>
+                    Add Member
+                  </Button>
+                )}
               </div>
+              {renderMemo(2)}
             </div>
           </TabPanel>
         </Box>
       </div>
+
+      {/* Add Member Dialog */}
+      <Dialog open={openAddMemberDialog} onClose={handleCloseAddMemberDialog}>
+        <DialogTitle>Add a New Team Member</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="normal"
+            label="Name"
+            type="text"
+            fullWidth
+            value={newMember.name}
+            onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+          />
+          <TextField
+            margin="normal"
+            label="Role"
+            type="text"
+            fullWidth
+            value={newMember.role}
+            onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+          />
+          <TextField
+            margin="normal"
+            label="Stack"
+            type="text"
+            fullWidth
+            value={newMember.stack}
+            onChange={(e) => setNewMember({ ...newMember, stack: e.target.value })}
+          />
+          <TextField
+            margin="normal"
+            label="GitHub URL"
+            type="url"
+            fullWidth
+            value={newMember.github}
+            onChange={(e) => setNewMember({ ...newMember, github: e.target.value })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAddMemberDialog}>Cancel</Button>
+          <Button onClick={handleAddNewMember} color="primary">Add Member</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
