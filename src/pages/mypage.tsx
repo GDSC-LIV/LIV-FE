@@ -5,7 +5,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Autocomplete from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import GitHubIcon from '@mui/icons-material/GitHub';
 const Mypage: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
@@ -74,6 +74,7 @@ const PersonalInfo: React.FC = () => {
   const [profilePic, setProfilePic] = useState('https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg');
   const [techStack, setTechStack] = useState<string[]>([]);
   const [newTech, setNewTech] = useState('');
+  const [githubLink, setGithubLink] = useState('');
 
   const handleProfilePicChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -152,6 +153,26 @@ const PersonalInfo: React.FC = () => {
           )}
         />
       </Stack>
+      <TextField
+        label="GitHub 링크"
+        value={githubLink}
+        onChange={(e) => setGithubLink(e.target.value)}
+        variant="outlined"
+        fullWidth
+        sx={{ maxWidth: 500 }}
+        InputProps={{
+          endAdornment: (
+            <IconButton
+              edge="end"
+              aria-label="github-link"
+              onClick={handleSaveChanges}
+            >
+              <GitHubIcon />
+            </IconButton>
+          ),
+        }}
+      />
+
       <Button variant="contained" color="primary" onClick={handleSaveChanges}>
         저장하기
       </Button>

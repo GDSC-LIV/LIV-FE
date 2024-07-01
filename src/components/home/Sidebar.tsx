@@ -1,12 +1,31 @@
 import React from 'react';
-const tierImages = {
-  'Gold II': 'https://static.solved.ac/tier_small/14.svg',
-  'Silver I': '/path/to/silver-image.png',
-  // 다른 티어에 맞는 이미지를 추가하세요
+import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
+
+interface ActionAreaCardProps {
+  image: string;
+  title: string;
+  description: string;
+}
+
+const ActionAreaCard: React.FC<ActionAreaCardProps> = ({ image, title, description }) => {
+  return (
+    <Card sx={{ maxWidth: 345 }}>
+      <CardMedia component="img" height="140" image={image} alt={title} />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {description}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
 };
+
 const Sidebar: React.FC = () => {
-  const tier = 'Gold II'; 
-  const tierImage = tierImages[tier];
+  const tier = 'Gold II'; // Example tier, adjust as per your data needs
+
   return (
     <aside className="w-1/4 flex flex-col space-y-4">
       <div className="relative bg-white shadow-sm rounded-lg overflow-hidden">
@@ -55,10 +74,29 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
           <div className="mb-4">
-            <h4 className="font-semibold">해시태그</h4>
-          </div>
-          <div className="mb-4">
             <h4 className="font-semibold">트렌드기사&광고</h4>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <ActionAreaCard
+                image="/static/images/cards/card1.jpg"
+                title="Card Title 1"
+                description="Description of card 1."
+              />
+              <ActionAreaCard
+                image="/static/images/cards/card2.jpg"
+                title="Card Title 2"
+                description="Description of card 2."
+              />
+              <ActionAreaCard
+                image="/static/images/cards/card3.jpg"
+                title="Card Title 3"
+                description="Description of card 3."
+              />
+              <ActionAreaCard
+                image="/static/images/cards/card4.jpg"
+                title="Card Title 4"
+                description="Description of card 4."
+              />
+            </Box>
           </div>
         </div>
       </div>

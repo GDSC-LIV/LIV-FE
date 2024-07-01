@@ -37,12 +37,12 @@ const Header: React.FC<HeaderProps> = ({ value, onChange }) => {
     <header className="w-full bg-white shadow-sm z-50 relative">
       <div className="max-w-6xl mx-auto flex items-center justify-between relative">
         <div className="flex items-center space-x-4">
-          <img
+          {/* <img
             src="https://via.placeholder.com/150?text=LIV"
             alt="LIV Logo"
             className="w-10 h-10 cursor-pointer"
             onClick={() => navigate('/')}
-          />
+          /> */}
           <input
             type="text"
             placeholder="Search"

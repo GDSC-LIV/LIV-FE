@@ -1,122 +1,38 @@
-.header {
-    width: 100%;
-    background-color: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    z-index: 50;
-    position: relative;
-  }
-  
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-  }
-  
-  .logo-search {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo {
-    width: 40px;
-    height: 40px;
-    margin-right: 20px;
-  }
-  
-  .search-input {
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    padding: 5px 15px;
-  }
-  
-  .nav-profile {
-    display: flex;
-    align-items: center;
-  }
-  
-  .profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    margin-left: 20px;
-  }
-  
-  .project-page {
-    padding: 20px;
-  }
-  
-  .content {
-    display: flex;
-  }
-  
-  .calendar-section {
-    flex: 0.5;
-    margin-right: 20px;
-  }
-  
-  .team-section {
-    flex: 0.5;
-  }
-  
-  .add-event-form, .add-member-form {
-    margin-top: 20px;
-  }
-  
-  .add-event-form input, .add-member-form input {
-    display: block;
-    margin-bottom: 10px;
-    padding: 10px;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
-  
-  .add-event-form button, .add-member-form button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .add-event-form button:hover, .add-member-form button:hover {
-    background-color: #0056b3;
-  }
-  
-  .team-section ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .team-section li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #f9f9f9;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-  }
-  
-  .team-section li p {
-    margin: 0;
-  }
-  
-  .team-section li a {
-    color: #333;
-    margin-right: 10px;
-  }
-  
-  .team-section li button {
-    background: none;
-    border: none;
-    color: #e74c3c;
-    cursor: pointer;
-  }
-  
+
+
+.project-page {
+  padding: 20px;
+  background-color: #f4f4f8;
+}
+
+.team-section {
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.memo-section {
+  padding: 10px;
+  margin-top: 20px;
+}
+
+.add-member-button {
+  margin-top: 10px;
+}
+
+.MuiAccordion-root {
+  margin-bottom: 10px;
+}
+
+.project-description {
+  margin: 20px 0;
+}
+
+/* Improved button styles
+button, .MuiButton-root {
+  background-color: #007bff;
+  color: white;
+}
+
+button:hover, .MuiButton-root:hover {
+  background-color: #0056b3;
+} */

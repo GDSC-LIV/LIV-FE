@@ -59,7 +59,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
         transform: "translate(-50%, -50%)",
       }}
     >
-      <h2 className="text-2xl font-semibold mb-4">프로젝트 모집</h2>
+      <h2 className="text-2xl font-semibold mb-4">Start a Post</h2>
       
       {step === 1 && (
         <>
@@ -78,7 +78,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
             <MenuItem value="스터디 모집">스터디 모집</MenuItem>
           </TextField>
           <TextField
-            label="프로젝트 주제"
+            label="주제"
             variant="outlined"
             fullWidth
             value={topic}
