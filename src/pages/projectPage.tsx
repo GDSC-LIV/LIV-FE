@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { FaGithub, FaTrashAlt, FaPlus } from 'react-icons/fa';
+import { FaGithub, FaTrashAlt } from 'react-icons/fa';
 import Header from '../components/Header';
 import './ProjectPage.css';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -14,12 +9,11 @@ import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-
-const localizer = momentLocalizer(moment);
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 type TeamMember = {
   id: number;
@@ -30,303 +24,163 @@ type TeamMember = {
   photo: string;
 };
 
-type Event = {
-  title: string;
-  start: Date;
-  end: Date;
+type ProjectData = {
   teamId: number;
+  description: string;
 };
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel: React.FC<TabPanelProps> = (props) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
+type MeetingRecord = {
+  date: string;
+  content: string;
 };
-
-const a11yProps = (index: number) => ({
-  id: `vertical-tab-${index}`,
-  'aria-controls': `vertical-tabpanel-${index}`,
-});
 
 const ProjectPage: React.FC = () => {
-  const [value, setValue] = useState(0);
-  const [events, setEvents] = useState<Event[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     { id: 1, name: 'Alice', role: 'Developer', stack: 'React, Node.js', github: 'https://github.com/alice', photo: 'https://via.placeholder.com/150' },
     { id: 2, name: 'Bob', role: 'Designer', stack: 'Figma, Sketch', github: 'https://github.com/bob', photo: 'https://via.placeholder.com/150' },
+    { id: 3, name: 'Charlie', role: 'Tester', stack: 'Jest, Cypress', github: 'https://github.com/charlie', photo: 'https://via.placeholder.com/150' },
+    { id: 4, name: 'David', role: 'Manager', stack: 'Agile, Scrum', github: 'https://github.com/david', photo: 'https://via.placeholder.com/150' },
   ]);
 
-  const [teamNames, setTeamNames] = useState({ 1: 'Team 1', 2: 'Team 2' });
-  const [newEvent, setNewEvent] = useState<Event>({ title: '', start: new Date(), end: new Date(), teamId: 0 });
-  const [memos, setMemos] = useState<{ [key: number]: string }>({ 1: '', 2: '' });
-  const [isTeamLeader, setIsTeamLeader] = useState(true); // 팀장 여부 설정
-  const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false);
-  const [newMember, setNewMember] = useState<TeamMember>({ id: 0, name: '', role: '', stack: '', github: '', photo: '' });
+  const [teamNames] = useState({ 1: 'Team 1', 2: 'Team 2' });
+  const [projectData] = useState<ProjectData[]>([
+    { teamId: 1, description: 'This is a description of project for Team 1.' },
+    { teamId: 2, description: 'This is a description of project for Team 2.' },
+  ]);
 
-  const handleAddEvent = (teamId: number) => {
-    setEvents([...events, { ...newEvent, teamId }]);
-    setNewEvent({ title: '', start: new Date(), end: new Date(), teamId: 0 });
+  const [meetingRecords, setMeetingRecords] = useState<{ [key: number]: MeetingRecord[] }>({
+    1: [],
+    2: [],
+  });
+
+  const [newMeeting, setNewMeeting] = useState<{ [key: number]: MeetingRecord }>({
+    1: { date: '', content: '' },
+    2: { date: '', content: '' },
+  });
+
+  const [memos, setMemos] = useState<{ [key: number]: string }>({
+    1: '',
+    2: '',
+  });
+
+  const handleMeetingChange = (teamId: number, field: string, value: string) => {
+    setNewMeeting({
+      ...newMeeting,
+      [teamId]: { ...newMeeting[teamId], [field]: value },
+    });
+  };
+
+  const handleSaveMeeting = (teamId: number) => {
+    setMeetingRecords({
+      ...meetingRecords,
+      [teamId]: [...meetingRecords[teamId], newMeeting[teamId]].sort((a, b) => (a.date > b.date ? 1 : -1)),
+    });
+    setNewMeeting({ ...newMeeting, [teamId]: { date: '', content: '' } });
   };
 
   const handleRemoveMember = (id: number) => {
     setTeamMembers(teamMembers.filter((member) => member.id !== id));
   };
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleMemoChange = (teamId: number, value: string) => {
+    setMemos({ ...memos, [teamId]: value });
   };
 
-  const handleTeamNameChange = (teamId: number, name: string) => {
-    setTeamNames({ ...teamNames, [teamId]: name });
-  };
-
-  const handleMemoChange = (teamId: number, memo: string) => {
-    setMemos({ ...memos, [teamId]: memo });
-  };
-
-  const renderTeamMembers = (teamId: number) => {
-    return teamMembers.map((member) => (
-      <Paper key={member.id} elevation={3} sx={{ p: 2, mb: 2 }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item>
-            <Avatar src={member.photo} alt={member.name} />
-          </Grid>
-          <Grid item xs>
-            <Typography variant="h6">{member.name}</Typography>
-            <Typography variant="body2">Role: {member.role}</Typography>
-            <Typography variant="body2">Stack: {member.stack}</Typography>
-            <a href={member.github} target="_blank" rel="noopener noreferrer">
-              <FaGithub />
-            </a>
-          </Grid>
-          {isTeamLeader && (
-            <Grid item>
-              <button onClick={() => handleRemoveMember(member.id)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-                <FaTrashAlt />
-              </button>
-            </Grid>
-          )}
-        </Grid>
-      </Paper>
-    ));
-  };
-
-  const renderAddEventForm = (teamId: number) => (
-    <div className="add-event-form">
-      <h3>Add Event</h3>
-      <TextField
-        fullWidth
-        label="Event Title"
-        value={newEvent.title}
-        onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-        margin="normal"
-      />
-      <TextField
-        fullWidth
-        label="Start Date"
-        type="datetime-local"
-        value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
-        onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-      <TextField
-        fullWidth
-        label="End Date"
-        type="datetime-local"
-        value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
-        onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-      />
-      <Button variant="contained" color="primary" onClick={() => handleAddEvent(teamId)} sx={{ mt: 2 }}>
-        Add Event
-      </Button>
-    </div>
-  );
-
-  const renderMemo = (teamId: number) => (
-    <div className="memo-section">
-      <h3>Team Memo</h3>
-      <TextField
-        fullWidth
-        label="Memo"
-        multiline
-        rows={4}
-        value={memos[teamId]}
-        onChange={(e) => handleMemoChange(teamId, e.target.value)}
-        margin="normal"
-      />
-    </div>
-  );
-
-  const handleOpenAddMemberDialog = () => {
-    setOpenAddMemberDialog(true);
-  };
-
-  const handleCloseAddMemberDialog = () => {
-    setOpenAddMemberDialog(false);
-  };
-
-  const handleAddNewMember = () => {
-    setTeamMembers([...teamMembers, { ...newMember, id: teamMembers.length + 1 }]);
-    handleCloseAddMemberDialog();
+  const handleSaveMemo = (teamId: number) => {
+    alert(`Memo saved for Team ${teamId}`);
   };
 
   return (
-    <div>
+    <div style={{ backgroundColor: '#f4f4f8', minHeight: '100vh' }}>
       <Header value={1} onChange={() => {}} />
       <div className="project-page">
-        <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={value}
-            onChange={handleChange}
-            aria-label="Vertical tabs example"
-            sx={{ borderRight: 1, borderColor: 'divider' }}
-          >
-            <Tab label="All Teams Schedule" {...a11yProps(0)} />
-            <Tab label={teamNames[1]} {...a11yProps(1)} />
-            <Tab label={teamNames[2]} {...a11yProps(2)} />
-          </Tabs>
-          <TabPanel value={value} index={0}>
-            <div className="calendar-section">
-              <Calendar
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }}
-              />
-              {renderAddEventForm(0)}
-            </div>
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-          <TextField
-              fullWidth
-              label="Team Name"
-              value={teamNames[1]}
-              onChange={(e) => handleTeamNameChange(1, e.target.value)}
-              margin="normal"
-            />
-            <div className="calendar-section">
-              <Calendar
-                localizer={localizer}
-                events={events.filter(event => event.teamId === 1)}
-                startAccessor="start"
-                endAccessor="end"
-                style={{ height: 500 }}
-              />
-              {renderAddEventForm(1)}
-              <div className="team-section">
-                <h2>{teamNames[1]} Members</h2>
-                {renderTeamMembers(1)}
-                {isTeamLeader && (
-                  <Button variant="outlined" startIcon={<FaPlus />} onClick={handleOpenAddMemberDialog}>
-                    Add Member
-                  </Button>
-                )}
-              </div>
-              {renderMemo(1)}
-            </div>
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <TextField
-              fullWidth
-              label="Team Name"
-              value={teamNames[2]}
-              onChange={(e) => handleTeamNameChange(2, e.target.value)}
-              margin="normal"
-            />
-            <div className="calendar-section">
-            <Calendar
-  localizer={localizer}
-  events={events.filter(event => event.teamId === 2)}
-  startAccessor="start"
-  endAccessor="end"
-  style={{ height: 500 }}
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', paddingRight: 32, paddingLeft: 32 }}>
+          {Object.entries(teamNames).map(([id, name], index) => (
+            <Accordion key={id} defaultExpanded={index === 0}>
+              <AccordionSummary
+                expandIcon={<ArrowDownwardIcon />}
+                aria-controls={`panel${id}-content`}
+                id={`panel${id}-header`}
+              >
+                <Typography>{name}</Typography>
+              </AccordionSummary>
+              <AccordionDetails style={{ backgroundColor: 'white' }}>
+                <div className="project-description">
+                  <Typography variant="body1">
+                    {projectData.find((project) => project.teamId === Number(id))?.description}
+                  </Typography>
+                </div>
+                <div className="team-section">
+                  <h2>{name} Members</h2>
+                  <Grid container spacing={2}>
+                    {teamMembers.map((member) => (
+                      <Grid item xs={12} sm={6} md={3} key={member.id}>
+                        <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+                          <Grid container spacing={2} alignItems="center">
+                            <Grid item>
+                              <Avatar src={member.photo} alt={member.name} />
+                            </Grid>
+                            <Grid item xs>
+                              <Typography variant="h6">{member.name}</Typography>
+                              <Typography variant="body2">Role: {member.role}</Typography>
+                              <Typography variant="body2">Stack: {member.stack}</Typography>
+                    
+                            </Grid>
+                            <Grid item>
+                            <a href={member.github} target="_blank" rel="noopener noreferrer">
+                                <FaGithub />
+                              </a>
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </div>
+                <div className="meeting-section">
+                  <h3>회의내용</h3>
+                  {meetingRecords[Number(id)].map((record, index) => (
+                    <Accordion key={index}>
+                      <AccordionSummary
+                        expandIcon={<ArrowDropDownIcon />}
+                        aria-controls={`panel${id}-content-${index}`}
+                        id={`panel${id}-header-${index}`}
+                      >
+                        <Typography variant="body2">{record.date}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails style={{ backgroundColor: 'white' }}>
+                        <Typography variant="body1">{record.content}</Typography>
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                  <TextField
+  fullWidth
+  label="Date"
+  type="date"
+  value={newMeeting[Number(id)].date}
+  onChange={(e) => handleMeetingChange(Number(id), 'date', e.target.value)}
+  margin="normal"
+  sx={{ width: '20%' }} // Adjust width as needed
 />
 
-              {renderAddEventForm(2)}
-              <div className="team-section">
-                <h2>{teamNames[2]} Members</h2>
-                {renderTeamMembers(2)}
-                {isTeamLeader && (
-                  <Button variant="outlined" startIcon={<FaPlus />} onClick={handleOpenAddMemberDialog}>
-                    Add Member
+                  <TextField
+                    fullWidth
+                    label="Meeting Content"
+                    multiline
+                    rows={4}
+                    value={newMeeting[Number(id)].content}
+                    onChange={(e) => handleMeetingChange(Number(id), 'content', e.target.value)}
+                    margin="normal"
+                  />
+                  <Button variant="contained" color="primary" onClick={() => handleSaveMeeting(Number(id))}>
+                    저장하기
                   </Button>
-                )}
-              </div>
-              {renderMemo(2)}
-            </div>
-          </TabPanel>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+          ))}
         </Box>
       </div>
-
-      {/* Add Member Dialog */}
-      <Dialog open={openAddMemberDialog} onClose={handleCloseAddMemberDialog}>
-        <DialogTitle>Add a New Team Member</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="normal"
-            label="Name"
-            type="text"
-            fullWidth
-            value={newMember.name}
-            onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-          />
-          <TextField
-            margin="normal"
-            label="Role"
-            type="text"
-            fullWidth
-            value={newMember.role}
-            onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-          />
-          <TextField
-            margin="normal"
-            label="Stack"
-            type="text"
-            fullWidth
-            value={newMember.stack}
-            onChange={(e) => setNewMember({ ...newMember, stack: e.target.value })}
-          />
-          <TextField
-            margin="normal"
-            label="GitHub URL"
-            type="url"
-            fullWidth
-            value={newMember.github}
-            onChange={(e) => setNewMember({ ...newMember, github: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAddMemberDialog}>Cancel</Button>
-          <Button onClick={handleAddNewMember} color="primary">Add Member</Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };

@@ -13,6 +13,8 @@ import Avatar from '@mui/material/Avatar';
 import { format } from 'date-fns';
 import { IconButton } from '@mui/material';
 import { FaRegComment, FaRegBookmark } from 'react-icons/fa';
+import CloseIcon from '@mui/icons-material/Close';
+
 
 const mockData = [
   {
@@ -101,6 +103,10 @@ const MainContent: React.FC = () => {
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCommentText(event.target.value);
+  };
+  const handleDeleteComment = (postId: number, commentId: number) => {
+    const updatedComments = comments.filter(comment => comment.id !== commentId);
+    setComments(updatedComments);
   };
 
   const handleSubmitComment = (postId: number) => {
@@ -241,44 +247,86 @@ const MainContent: React.FC = () => {
               </div>
 
               {showComments[post.id] && (
-                <div className="mt-4 border-t border-gray-200 pt-4">
-                  <input
-                    type="text"
-                    value={commentText}
-                    onChange={handleCommentChange}
-                    placeholder="Write your comment..."
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-2"
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleSubmitComment(post.id)}
-                    className="ml-2 mt-2"
-                  >
-                    Submit
-                  </Button>
-                  {comments.length > 0 && (
-                    <div className="mt-4">
-                      <h4 className="font-semibold">Comments</h4>
-                      {comments.map((comment) => (
-                        <div key={comment.id} className="flex items-start mt-2">
-                          <Avatar
-                            src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
-                            alt="Avatar"
-                          />
-                          <div className="ml-3">
-                            <p className="text-sm text-gray-600">
-                              {format(comment.timestamp, "yyyy-MM-dd HH:mm")}
-                            </p>
-                            <p className="mt-1">{comment.text}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+  <div className="mt-4 border-t border-gray-200 pt-4">
+    <input
+      type="text"
+      value={commentText}
+      onChange={handleCommentChange}
+      placeholder="Write your comment..."
+      className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-2"
+    />
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => handleSubmitComment(post.id)}
+      className="ml-2 mt-2"
+    >
+      Submit
+    </Button>
+    {comments.length > 0 && (
+      <div className="mt-4">
+        <h4 className="font-semibold">Comments</h4>
+        {comments.map((comment) => (
+          <div key={comment.id} className="flex items-start mt-2">
+            <Avatar
+              src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+              alt="Avatar"
+            />
+            <div className="ml-3 flex justify-between w-full">
+              <div>
+                <p className="text-sm text-gray-600">
+                  {format(comment.timestamp, "yyyy-MM-dd HH:mm")}
+                </p>
+                <p className="mt-1">{comment.text}</p>
+              </div>
+              <IconButton
+                sx={{ color: "gray" }}
+                onClick={() => handleDeleteComment(post.id, comment.id)}
+              >
+                <CloseIcon />
+              </IconButton>
             </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+            </div>
+          </div>
+        ))}
+
+{selectedCategory === "광고나 홍보성 글" &&
+        mockData.map((post) => (
+          <div key={post.id} className="bg-white p-4 shadow-sm rounded-lg mt-4">
+            <div className="flex items-center space-x-4">
+              <img
+                ref={profileRef}
+                src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+                alt="Profile"
+                className="w-12 h-12 rounded-full cursor-pointer"
+                onClick={toggleProfileModal}
+              />
+              <ProfileModal
+                open={profileModalOpen}
+                onClose={toggleProfileModal}
+                // position={profileModalPosition}
+              />
+              <div>
+                <h3 className="font-semibold">{post.username}</h3>
+                <p className="text-gray-600">{post.role}</p>
+              </div>
+            </div>
+
+            <h4 className="font-semibold mt-4">프로젝트 주제</h4>
+            <p className="mt-2 text-gray-800">{post.projectTitle}</p>
+
+            <img
+              src={post.imageUrl}
+              alt="Project"
+              className="h-60 mt-4 w-full rounded-lg"
+            />
           </div>
         ))}
 
