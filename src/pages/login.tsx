@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import GoogleLoginButton from "../components/login/GoogleLoginButton";
 
@@ -71,23 +71,6 @@ const Login: React.FC = () => {
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
-};
-
-const SignInForm: React.FC = () => {
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <TextField label="Enter Email" variant="outlined" fullWidth />
-      <TextField
-        label="Password"
-        type="password"
-        variant="outlined"
-        fullWidth
-      />
-      <Button variant="contained" color="primary" fullWidth>
-        Sign In
-      </Button>
     </Box>
   );
 };
