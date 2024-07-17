@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import MenuItem from '@mui/material/MenuItem';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -11,6 +10,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import dayjs from 'dayjs';
+import axios from 'axios';
 
 interface PostModalProps {
   onClose: () => void;
@@ -18,20 +18,14 @@ interface PostModalProps {
 
 const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
   const [step, setStep] = useState(1);
-  const [purpose, setPurpose] = useState('');
   const [topic, setTopic] = useState('');
   const [content, setContent] = useState('');
   const [recruitmentField, setRecruitmentField] = useState('');
   const [onlineStatus, setOnlineStatus] = useState('');
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(dayjs());
-  const [image, setImage] = useState<File | null>(null);
   const [applicationURL, setApplicationURL] = useState('');
-  const [hashTags, setHashTags] = useState<string[]>([]);
 
-  const handleHashTagChange = (event: SelectChangeEvent<string[]>) => {
-    setHashTags(event.target.value as string[]);
-  };
 
   const handleNextStep = () => {
     setStep(2);
@@ -41,10 +35,42 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
     setStep(1);
   };
 
-  const handleSubmit = () => {
-    // handle the submit logic here
-    onClose();
+  const handleSubmit = async () => {
+    const isOnlineTransformed = onlineStatus === '온라인' ? true : onlineStatus === '오프라인' ? false : null; // '혼합'의 경우 추가 처리 필요
+  
+    const postData = {
+      topic,
+      field: recruitmentField.split(',').map(field => field.trim()).join(', '),  // 쉼표로 구분된 문자열로 변환
+      is_online: isOnlineTransformed,
+      duration: `${startDate?.format('YYYY-MM-DD')} - ${endDate?.format('YYYY-MM-DD')}`,
+      content,
+      contact: applicationURL,
+      type: "RECRUIT",
+    };
+  
+    console.log('Submitting post data:', postData);
+  
+    try {
+      const response = await axios.post('/api/posts/register', postData, {
+        headers: {
+          'Content-Type': 'application/json'  // 명시적으로 헤더 설정
+        }
+      });
+      console.log('Response from API:', response);
+  
+      if (response.data.isSuccess) {
+        alert(response.data.message);
+        onClose();
+      } else {
+        console.error('API response error:', response.data);
+        alert('오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    } catch (error) {
+      console.error('Error posting data:', error);
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
+    }
   };
+  
 
   return (
     <Box
@@ -63,20 +89,6 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
       
       {step === 1 && (
         <>
-          <TextField
-            label="목적"
-            variant="outlined"
-            select
-            fullWidth
-            value={purpose}
-            onChange={(e) => setPurpose(e.target.value)}
-            sx={{ mb: 2 }}
-          >
-            <MenuItem value="회원 모집">회원 모집</MenuItem>
-            <MenuItem value="프로젝트 홍보">프로젝트 홍보</MenuItem>
-            <MenuItem value="유익한 정보">유익한 정보</MenuItem>
-            <MenuItem value="스터디 모집">스터디 모집</MenuItem>
-          </TextField>
           <TextField
             label="주제"
             variant="outlined"
@@ -101,13 +113,27 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
             fullWidth
             value={recruitmentField}
             onChange={(e) => setRecruitmentField(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={{ mb: 8 }}
           />
           <Button
-            variant="contained"
+            variant="outlined"
             color="primary"
             onClick={handleNextStep}
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 8,
+              position: 'absolute',
+              bottom: 16,
+              right: 16,
+              width: 'auto',
+              borderRadius: '16px',
+              borderColor: 'black',
+              color: 'black',
+              backgroundColor: 'transparent',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                borderColor: 'black',
+              }
+            }}
           >
             다음
           </Button>
@@ -143,33 +169,6 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
               />
             </div>
           </LocalizationProvider>
-          <Button
-            variant="contained"
-            component="label"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "gray",
-              color: "white",
-              mb: 2,
-              "&:hover": {
-                backgroundColor: "darkgray",
-              },
-            }}
-          >
-            <AddPhotoAlternateIcon sx={{ mr: 1 }} />
-            사진 추가
-            <input
-              type="file"
-              hidden
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setImage(e.target.files[0]);
-                }
-              }}
-            />
-          </Button>
           <TextField
             label="지원 URL"
             variant="outlined"
@@ -178,36 +177,48 @@ const PostModal: React.FC<PostModalProps> = ({ onClose }) => {
             onChange={(e) => setApplicationURL(e.target.value)}
             sx={{ mb: 2 }}
           />
-          <FormControl fullWidth variant="outlined" sx={{ mb: 4 }}>
-            <InputLabel id="hash-tag-select-label">해쉬태그 선택</InputLabel>
-            <Select
-              labelId="hash-tag-select-label"
-              id="hash-tag-select"
-              multiple
-              value={hashTags}
-              onChange={handleHashTagChange}
-              label="해쉬태그 선택"
-            >
-              <MenuItem value="프론트">프론트</MenuItem>
-              <MenuItem value="백엔드">백엔드</MenuItem>
-              <MenuItem value="AI">AI</MenuItem>
-              <MenuItem value="서버">서버</MenuItem>
-              <MenuItem value="클라우드">클라우드</MenuItem>
-              <MenuItem value="Devops">Devops</MenuItem>
-            </Select>
-          </FormControl>
+          
           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Button
-              variant="contained"
-              color="primary"
               onClick={handlePreviousStep}
+              variant="outlined"
+              color="primary"
+              sx={{
+                mt: 12,
+                position: 'absolute',
+                bottom: 16,
+                left: 16,
+                width: 'auto',
+                borderRadius: '16px',
+                borderColor: 'black',
+                color: 'black',
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                  borderColor: 'black',
+                }
+              }}
             >
               이전
             </Button>
             <Button
-              variant="contained"
+              variant="outlined"
               color="primary"
               onClick={handleSubmit}
+              sx={{
+                position: 'absolute',
+                bottom: 16,
+                right: 16,
+                width: 'auto',
+                borderRadius: '16px',
+                borderColor: 'black',
+                color: 'black',
+                backgroundColor: 'transparent',
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                  borderColor: 'black',
+                }
+              }}
             >
               제출
             </Button>
