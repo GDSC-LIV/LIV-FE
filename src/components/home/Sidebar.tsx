@@ -24,7 +24,37 @@ const ActionAreaCard: React.FC<ActionAreaCardProps> = ({ image, title, descripti
 };
 
 const Sidebar: React.FC = () => {
-  const tier = 'Gold II'; // Example tier, adjust as per your data needs
+  const developmentStacks = [
+    { title: "JavaScript", img: "https://skillicons.dev/icons?i=js&theme=light" },
+    { title: "TypeScript", img: "https://skillicons.dev/icons?i=ts" },
+    { title: "React", img: "https://skillicons.dev/icons?i=react&theme=light" },
+    { title: "Vue", img: "https://skillicons.dev/icons?i=vue&theme=light" },
+    { title: "Node.js", img: "https://skillicons.dev/icons?i=nodejs&theme=light" },
+    // { title: "Spring", img: "https://skillicons.dev/icons?i=spring&theme=light" },
+    // { title: "Java", img: "https://skillicons.dev/icons?i=java&theme=light" },
+    // { title: "Next.js", img: "https://skillicons.dev/icons?i=nextjs&theme=light" },
+    // { title: "NestJS", img: "https://skillicons.dev/icons?i=nestjs&theme=light" },
+    // { title: "Express", img: "https://skillicons.dev/icons?i=express&theme=light" },
+    // { title: "Go", img: "https://skillicons.dev/icons?i=go&theme=light" },
+    // { title: "C", img: "https://skillicons.dev/icons?i=c&theme=light" },
+    // { title: "Python", img: "https://skillicons.dev/icons?i=python&theme=light" },
+    // { title: "Django", img: "https://skillicons.dev/icons?i=django&theme=light" },
+    // { title: "Swift", img: "https://skillicons.dev/icons?i=swift&theme=light" },
+    // { title: "Kotlin", img: "https://skillicons.dev/icons?i=kotlin&theme=light" },
+    // { title: "MySQL", img: "https://skillicons.dev/icons?i=mysql&theme=light" },
+    // { title: "MongoDB", img: "https://skillicons.dev/icons?i=mongodb&theme=light" },
+    // { title: "PHP", img: "https://skillicons.dev/icons?i=php&theme=light" },
+    // { title: "GraphQL", img: "https://skillicons.dev/icons?i=graphql&theme=light" },
+    // { title: "Firebase", img: "https://skillicons.dev/icons?i=firebase&theme=light" },
+    // { title: "React Native", img: "https://skillicons.dev/icons?i=react&theme=light" },
+    // { title: "Unity", img: "https://skillicons.dev/icons?i=unity&theme=light" },
+    // { title: "Flutter", img: "https://skillicons.dev/icons?i=flutter&theme=light" },
+    // { title: "AWS", img: "https://skillicons.dev/icons?i=aws&theme=light" },
+    // { title: "Kubernetes", img: "https://skillicons.dev/icons?i=kubernetes" },
+    // { title: "Docker", img: "https://skillicons.dev/icons?i=docker" },
+    // { title: "Git", img: "https://skillicons.dev/icons?i=git&theme=light" },
+    // { title: "Figma", img: "https://skillicons.dev/icons?i=figma&theme=light" },
+  ];
 
   return (
     <aside className="w-1/4 flex flex-col space-y-4">
@@ -42,8 +72,16 @@ const Sidebar: React.FC = () => {
           />
           <h2 className="mt-4 font-semibold">Username</h2>
           <p className="text-gray-600">Frontend developer</p>
-          
-          <p className="text-gray-600">Gold II https://github.com/</p>
+          <p className="text-gray-600">
+  <span style={{ color: '#B8860B', fontWeight: 'bold' }}>Gold II</span> https://github.com/
+</p>
+
+
+          <div className="flex flex-wrap justify-center mt-4 space-x-2">
+            {developmentStacks.map((stack, index) => (
+              <img key={index} src={stack.img} alt={stack.title} title={stack.title} className="w-8 h-8" />
+            ))}
+          </div>
         </div>
       </div>
       <div className="bg-white p-4 shadow-sm rounded-lg">
@@ -74,7 +112,7 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
           <div className="mb-4">
-            <h4 className="font-semibold">트렌드기사&광고</h4>
+            <h4 className="font-semibold">Articles</h4>
             <Box display="flex" flexDirection="column" gap={2}>
               <ActionAreaCard
                 image="/static/images/cards/card1.jpg"

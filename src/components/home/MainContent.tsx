@@ -15,7 +15,6 @@ import { IconButton } from '@mui/material';
 import { FaRegComment, FaRegBookmark } from 'react-icons/fa';
 import CloseIcon from '@mui/icons-material/Close';
 
-
 const mockData = [
   {
     id: 1,
@@ -241,57 +240,60 @@ const MainContent: React.FC = () => {
                 >
                   <FaRegComment />
                 </IconButton>
-                <IconButton color="secondary">
+                <IconButton >
                   <FaRegBookmark />
                 </IconButton>
               </div>
 
               {showComments[post.id] && (
   <div className="mt-4 border-t border-gray-200 pt-4">
-    <input
-      type="text"
-      value={commentText}
-      onChange={handleCommentChange}
-      placeholder="Write your comment..."
-      className="w-full border border-gray-300 rounded-lg px-4 py-2 mt-2"
-    />
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={() => handleSubmitComment(post.id)}
-      className="ml-2 mt-2"
-    >
-      Submit
-    </Button>
+    <div className="flex"> {/* This div wraps the input field and button */}
+      <input
+        type="text"
+        value={commentText}
+        onChange={handleCommentChange}
+        placeholder="Write your comment..."
+        className="flex-grow border border-gray-300 rounded-lg px-4 py-2 mt-2"
+      />
+      <Button
+        variant="text"
+        onClick={() => handleSubmitComment(post.id)}
+        className="ml-2 mt-2"
+      >
+        <SendIcon style={{ color: 'black' }} />
+      </Button>
+    </div>
     {comments.length > 0 && (
-      <div className="mt-4">
-        <h4 className="font-semibold">Comments</h4>
-        {comments.map((comment) => (
-          <div key={comment.id} className="flex items-start mt-2">
-            <Avatar
-              src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
-              alt="Avatar"
-            />
-            <div className="ml-3 flex justify-between w-full">
-              <div>
-                <p className="text-sm text-gray-600">
-                  {format(comment.timestamp, "yyyy-MM-dd HH:mm")}
-                </p>
-                <p className="mt-1">{comment.text}</p>
-              </div>
-              <IconButton
-                sx={{ color: "gray" }}
-                onClick={() => handleDeleteComment(post.id, comment.id)}
-              >
-                <CloseIcon />
-              </IconButton>
-            </div>
+  <div className="mt-4">
+    <h4 className="font-semibold">Comments</h4>
+    {comments.map((comment) => (
+      <div key={comment.id} className="flex items-start mt-2">
+        <Avatar
+          src="https://i.pinimg.com/originals/a7/ee/b8/a7eeb85a1d27390ebdf770f8cf31e434.jpg"
+          alt="Avatar"
+        />
+        <div className="flex-grow ml-3 flex justify-between">
+          <div>
+            <p className="text-sm text-gray-600">
+              {format(comment.timestamp, "yyyy-MM-dd HH:mm")}
+            </p>
+            <p className="mt-1">{comment.text}</p>
           </div>
-        ))}
+          <IconButton
+            sx={{ color: "gray" }}
+            onClick={() => handleDeleteComment(post.id, comment.id)}
+          >
+            <CloseIcon />
+          </IconButton>
+        </div>
       </div>
-    )}
+    ))}
   </div>
 )}
+
+  </div>
+)}
+
 
             </div>
           </div>

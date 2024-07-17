@@ -687,7 +687,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-gray-100 min-h-screen">
+    <div className="pt-20 flex flex-col items-center bg-gray-100 min-h-screen pb-24">
       <Header value={value} onChange={handleChange} />
       <main className="flex w-full max-w-6xl mx-auto mt-4 space-x-4">
         <MainContent />

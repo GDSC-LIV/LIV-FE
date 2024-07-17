@@ -91,7 +91,7 @@ const ProjectPage: React.FC = () => {
   };
 
   return (
-    <div style={{ backgroundColor: '#f4f4f8', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: '#f4f4f8', minHeight: '100vh', paddingTop:80}}>
       <Header value={1} onChange={() => {}} />
       <div className="project-page">
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', paddingRight: 32, paddingLeft: 32 }}>
